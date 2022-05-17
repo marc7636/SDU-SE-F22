@@ -1,7 +1,10 @@
 package dk.sdu.se_f22.sharedlibrary.db;
 
 import org.apache.commons.dbcp2.BasicDataSource;
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.LoggerContext;
+import org.apache.logging.log4j.core.config.Configurator;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -59,6 +62,15 @@ public class DBConnection {
         connectionPool.setMaxIdle(20);
         connectionPool.setMaxTotal(30);
         connectionPool.setMaxOpenPreparedStatements(100);
+        
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            //shutdown log4j
+            if( LogManager.getContext() instanceof LoggerContext) {
+                logger.info("Shutting down log4j2");
+                Configurator.shutdown((LoggerContext) LogManager.getContext());
+            } else
+                logger.warn("Unable to shutdown log4j2");
+        }));
     }
 
     public static DBConnection getInstance() {

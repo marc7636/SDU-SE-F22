@@ -299,7 +299,13 @@ public class ProductManager implements IProductManager, Runnable{
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        
+    
+        try {
+            updatedBaseProductArray = jsonReader.read();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    
         //Right here is where the XXXX.updateIndex() call to the module from Group 2.2 goes (see below):
         
         ProductIndexInfrastructure.getInstance().getProductIndex().indexProducts(updatedBaseProductArray);
