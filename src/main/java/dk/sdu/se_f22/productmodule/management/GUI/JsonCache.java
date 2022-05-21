@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class JsonCache {
-
+    
     private static JsonCache instance;
     private static File cacheFile;
     private static String root;
@@ -20,12 +20,12 @@ public class JsonCache {
         }
         root = root + "/src/main/resources/dk/sdu/se_f22/productmodule/management/GUI/";
     }
-
+    
     private final ProductJSONReader reader;
     private List<BaseProduct> quickAccess;
     private boolean removeCacheOnExit = false;
     private Thread shutdownHook,dumpHook;
-
+    
     public static JsonCache getInstance(){
         System.out.println("CACHE " + Thread.currentThread().getStackTrace()[2].getLineNumber() + " : INSTANCE REQUESTED");
         if(instance == null){
@@ -37,23 +37,23 @@ public class JsonCache {
         }
         return instance;
     }
-
+    
     private JsonCache(boolean removeCacheOnExit) throws IOException{
         System.out.println("CACHE " + Thread.currentThread().getStackTrace()[1].getLineNumber() + " : CREATING INSTANCE");
-
+        
         cacheFile = new File(root + "guiCache.json");
         boolean cacheFileFound = cacheFile.createNewFile();
         reader = new ProductJSONReader(cacheFile.getCanonicalPath());
         quickAccess = new ArrayList<>();
-
+        
         if(!cacheFileFound) {
             System.out.println("CACHE " + Thread.currentThread().getStackTrace()[1].getLineNumber() + " : FILE FOUND. READING CONTENTS");
             quickAccess = reader.read();
             System.out.println("CACHE " + Thread.currentThread().getStackTrace()[1].getLineNumber() + " : FILE CONTAINED " + quickAccess.size() + " ELEMENTS");
         }
-
+        
         System.out.println("CACHE " + Thread.currentThread().getStackTrace()[1].getLineNumber() + " : CREATION SUCCESS");
-
+        
         if(removeCacheOnExit){
             addShutdownHook(getDestroyHook());
         }else{
@@ -63,17 +63,17 @@ public class JsonCache {
     private JsonCache() throws IOException{
         this(false);
     }
-
+    
     private void updateCache() throws IOException{
         System.out.println("CACHE " + Thread.currentThread().getStackTrace()[1].getLineNumber() + " : UPDATING TO CONTAIN " + quickAccess.size() + " ELEMENTS");
         if(quickAccess.isEmpty()){return;}
         reader.write(quickAccess);
     }
-
+    
     public void overwrite(List<BaseProduct> list){
         quickAccess = list;
     }
-
+    
     public void add(List<BaseProduct> list){
         System.out.println("CACHE " + Thread.currentThread().getStackTrace()[1].getLineNumber() + " : ADDING " + list.size() + " ELEMENTS");
         quickAccess.addAll(list);
@@ -88,22 +88,22 @@ public class JsonCache {
     public void add(BaseProduct p) throws IOException{
         add(List.of(p));
     }
-
+    
     public void remove(List<BaseProduct> list){
         quickAccess.removeAll(list);
     }
     public void remove(BaseProduct p) throws IOException{
         quickAccess.remove(p);
     }
-
+    
     public List<BaseProduct> get(){
         return new ArrayList<>(quickAccess);
     }
-
+    
     public void dump() throws IOException{
         updateCache();
     }
-
+    
     public void dumpTo(String path){
         System.out.println("CACHE " + Thread.currentThread().getStackTrace()[1].getLineNumber() + " : DUMPING CACHE TO " + path);
         reader.write(quickAccess,path);
@@ -122,7 +122,7 @@ public class JsonCache {
     public boolean destroysOnExit(){
         return removeCacheOnExit;
     }
-
+    
     private void addShutdownHook(Thread hook){
         Runtime.getRuntime().addShutdownHook(hook);
     }
@@ -154,9 +154,9 @@ public class JsonCache {
         }
         return dumpHook;
     }
-
+    
     private void destroy(){
         System.out.println("CACHE " + Thread.currentThread().getStackTrace()[1].getLineNumber() + " : DESTROYED ON EXIT: " + cacheFile.delete());
     }
-
+    
 }

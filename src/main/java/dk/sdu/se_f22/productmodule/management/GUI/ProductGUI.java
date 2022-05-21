@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Optional;
 
 public class ProductGUI {
-
+    
     private BaseProduct baseProduct;    //The BaseProduct displayed through this GUI
     private boolean isInEditMode = false; //Boolean tracking if the GUI is in edit mode
     private boolean creatingNotEditing = false; //Boolean tracking whether to update an existing baseProduct or make a make a new one for Saving (.saveChanges())
@@ -31,7 +31,7 @@ public class ProductGUI {
     private final Button cancelButton;  //Button to exit edit mode.
     private final Button deleteButton;
     private static final Point2D cDim = new Point2D(App.dim.getX() * 0.85, App.dim.getY() * 0.95);
-
+    
     public ProductGUI(BaseProduct baseProduct){
         this.baseProduct = baseProduct;
         this.textPattrMap = new HashMap<>();
@@ -43,17 +43,17 @@ public class ProductGUI {
         this.saveButton = new Button("Save");
         this.cancelButton = new Button("Cancel");
         this.deleteButton = new Button("Delete");
-
+        
         generateGUI();
         setButtons();
     }
-
+    
     public ProductGUI(){
         this(getBlankProduct());
         creatingNotEditing = true;
         startEditMode();
     }
-
+    
     private void setButtons(){
         editButton.setOnMouseClicked(e -> startEditMode());
         editButton.setPrefWidth(cDim.getX() / 4.0);
@@ -69,12 +69,11 @@ public class ProductGUI {
         cancelButton.setOnMouseClicked(e -> cancelEditMode());
         cancelButton.setStyle("-fx-background-color:#d76868");
     }
-
+    
     private static BaseProduct getBlankProduct() {
         BaseProduct blankBaseProduct = new BaseProduct();
-
+        
         blankBaseProduct.set(ProductAttribute.UUID, "e.g. ea6954c2-64ec-4a65-b1a5-d614907e8b65");
-        blankBaseProduct.set(ProductAttribute.ID, "e.g. 25");
         blankBaseProduct.set(ProductAttribute.AVERAGE_USER_REVIEW, "e.g. 4.523");
         blankBaseProduct.set(ProductAttribute.IN_STOCK, "e.g. København,Hørsholm,Vejle...");
         blankBaseProduct.set(ProductAttribute.EAN, "e.g. 1122334455667");
@@ -87,36 +86,36 @@ public class ProductGUI {
         blankBaseProduct.set(ProductAttribute.WEIGHT, "in KG");
         blankBaseProduct.set(ProductAttribute.SIZE, "e.g. length by width by height");
         blankBaseProduct.set(ProductAttribute.CLOCKSPEED, "e.g. 4.5GHz");
-
+        
         return blankBaseProduct;
     }
-
+    
     private List<TextArea> generateGUI(){
         //Resetting the container
         container.getChildren().clear();
         subContainers.clear();
-
+        
         //Title text
         TextArea titleText = new TextArea(baseProduct.get(ProductAttribute.NAME));
         titleText.setEditable(false);
         titleText.setWrapText(true);
-
+        
         titleText.setFont(Font.font("Verdana",20));
         titleText.setPrefWidth(cDim.getX());
         titleText.setPrefHeight(cDim.getY() * 0.015);
-
+        
         HBox topBox = new HBox(titleText);
         container.getChildren().add(topBox);
         HBox subTopBox = new HBox(editButton, saveButton, cancelButton,deleteButton);
         container.getChildren().add(subTopBox);
-
+        
         List<TextArea> output = new ArrayList<>();
         //This makes the IN_STOCK display correctly for GUI purposes. It shouldn't change anything anywhere else. But for good measure this change is reverted later
         //baseProduct.set(ProductAttribute.IN_STOCK, baseProduct.get(ProductAttribute.IN_STOCK).replaceAll(",","\n"));
-
+        
         //Generates a table of Hboxes in VBoxes of all baseProduct attributes, however, ignore the first since that is the UUID which must not be changed
         for(ProductAttribute pattr : ProductAttribute.values()){
-
+            
             HBox subContainer = new HBox();
             subContainer.setPrefWidth(cDim.getX());
             subContainer.setPrefHeight((cDim.getY() - (topBox.getPrefHeight() + subTopBox.getPrefHeight())) * (1.00 / (ProductAttribute.values().length + 2)));
@@ -131,37 +130,37 @@ public class ProductGUI {
             attrText.setPrefWidth(subContainer.getPrefWidth() * 0.8);
             attrText.setPrefHeight(subContainer.getPrefHeight());
             attrText.setWrapText(true);
-
+            
             TextField attrNameText = new TextField(pattr.alias);
             attrNameText.setPrefWidth(subContainer.getPrefWidth() * 0.2);
-
+            
             //The user should only be able to make changes in the fields when edit mode is started. This way it's easier to make sure nothing goes wrong.
             attrText.setEditable(false);
             attrNameText.setEditable(false);
-
+            
             subContainer.getChildren().addAll(List.of(attrNameText, attrText));
-
+            
             subContainers.add(subContainer);
-
+            
             textPattrMap.put(attrText, pattr);
             pattrTextMap.put(pattr, attrText);
-
-
+            
+            
             output.add(attrText);
-
+            
         }
-
+        
         baseProduct.set(ProductAttribute.IN_STOCK, baseProduct.get(ProductAttribute.IN_STOCK).replaceAll("\n",","));
         container.getChildren().addAll(subContainers);
         editables.addAll(output);
         return output;
     }
-
+    
     public Node getGUI(){
         ScrollPane asScrollPane = new ScrollPane(container);
         return asScrollPane;
     }
-
+    
     public boolean deleteProduct(){
         //https://stackoverflow.com/questions/8309981/how-to-create-and-show-common-dialog-error-warning-confirmation-in-javafx-2
         //Here we create a popup dialog designed for alerting the user. We add a custom array of buttons to give the user more options
@@ -171,7 +170,7 @@ public class ProductGUI {
         alert.initOwner(App.getMainScene().getWindow());
         //Shows the popup dialog and pauses the program until an answer is given
         Optional<ButtonType> result = alert.showAndWait();
-
+        
         //Check the result from the user
         if (result.get() == ButtonType.YES) {
             //App.productManager.remove(baseProduct.get(ProductAttribute.UUID));
@@ -184,24 +183,24 @@ public class ProductGUI {
         } else {
             return false;
         }
-
+        
         return true;
     }
-
+    
     public boolean startEditMode(){
         System.out.println("Editing BaseProduct " + baseProduct.get(ProductAttribute.UUID));
         isInEditMode = true;
-
+        
         unlockAll();
-
+        
         editButton.setDisable(true);
         deleteButton.setDisable(true);
         saveButton.setDisable(false);
         cancelButton.setDisable(false);
-
+        
         return isInEditMode;
     }
-
+    
     private void unlockAll(){
         //This unlocks all the text fields that are editable. Meaning the user can change their values now.
         for(TextArea t : editables){
@@ -214,19 +213,19 @@ public class ProductGUI {
             t.setEditable(false);
         }
     }
-
+    
     public boolean saveChanges(){
         System.out.println("Saved Changes to BaseProduct " + baseProduct.get(ProductAttribute.UUID));
         isInEditMode = false;
-
+        
         //Step 0: Lock all fields so no changes can be made. Also disable the Save and Cancel Buttons.
         lockAll();
-
+        
         editButton.setDisable(false);
         deleteButton.setDisable(false);
         saveButton.setDisable(true);
         cancelButton.setDisable(true);
-
+        
         //Step 1: Read all information in the text fields and make a new baseProduct from this.
         BaseProduct modProd = getModProduct();
         //Step 2: Update the baseProduct to equal this new one. (Their UUID's will always be the same, but this is just to make sure the right baseProduct is overridden)
@@ -245,47 +244,47 @@ public class ProductGUI {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
+            
             //App.productManager.update(baseProduct.get(ProductAttribute.UUID), modProd);
         }
         //Step 3: Change what baseProduct this GUI is using.
         baseProduct = modProd;
         //Step 4: Remake the GUI using the new changed baseProduct.
         generateGUI();
-
+        
         return isInEditMode;
     }
     public boolean cancelEditMode(){
         System.out.println("Cancelled Editing BaseProduct " + baseProduct.get(ProductAttribute.UUID));
         isInEditMode = false;
-
+        
         lockAll();
-
+        
         editButton.setDisable(false);
         deleteButton.setDisable(false);
         saveButton.setDisable(true);
         cancelButton.setDisable(true);
-
+        
         generateGUI();
-
+        
         return !isInEditMode;
     }
-
+    
     private BaseProduct getModProduct(){
         BaseProduct output = new BaseProduct();
-
+        
         //Using the HashMap to pull out all the information stored in the text fields.
         for(ProductAttribute pattr : ProductAttribute.values()){
             output.set(pattr,pattrTextMap.get(pattr).getText());
         }
         //Then being a little creative when filling in the .setLocation string list.
         output.setLocations(new ArrayList<>(List.of(pattrTextMap.get(ProductAttribute.IN_STOCK).getText().split(","))));
-
+        
         return output;
     }
     public BaseProduct getProduct(){
         return baseProduct;
     }
     public boolean isInEditMode(){return isInEditMode;}
-
+    
 }
