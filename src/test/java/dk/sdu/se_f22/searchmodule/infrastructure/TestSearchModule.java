@@ -89,7 +89,7 @@ public class TestSearchModule {
 
     public static BaseProduct createExampleBaseproduct() {
         var product = new BaseProduct();
-        product.set(ProductAttribute.ID, UUID.randomUUID().toString());
+        product.set(ProductAttribute.UUID, UUID.randomUUID().toString());
         product.set(ProductAttribute.AVERAGE_USER_REVIEW, "123.0");
         product.set(ProductAttribute.IN_STOCK, "hello");
         product.set(ProductAttribute.EAN, "123");
@@ -99,9 +99,6 @@ public class TestSearchModule {
         product.set(ProductAttribute.CATEGORY, "hello");
         product.set(ProductAttribute.NAME, "hello");
         product.set(ProductAttribute.DESCRIPTION, "hello");
-        product.set(ProductAttribute.SIZE, "unavailable");
-        product.set(ProductAttribute.CLOCKSPEED, "unavailable");
-        product.set(ProductAttribute.WEIGHT, "unavailable");
         return product;
     }
 

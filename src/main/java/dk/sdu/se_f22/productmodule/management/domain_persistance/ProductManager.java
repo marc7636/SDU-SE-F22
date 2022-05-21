@@ -3,18 +3,17 @@ package dk.sdu.se_f22.productmodule.management.domain_persistance;
 import dk.sdu.se_f22.productmodule.infrastructure.ProductIndexInfrastructure;
 import dk.sdu.se_f22.sharedlibrary.models.Product;
 
-import java.io.*;
-import java.time.Instant;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
-import java.util.UUID;
 
 public class ProductManager implements IProductManager, Runnable{
     
     private final ProductJSONReader jsonReader;
     
-    protected ArrayList<BaseProduct> baseProductArray;
+    ArrayList<BaseProduct> baseProductArray;
     private ArrayList<BaseProduct> updatedBaseProductArray;
     private boolean backgroundThreadIsRunning = false;
     private final Thread backgroundThread;
@@ -164,7 +163,7 @@ public class ProductManager implements IProductManager, Runnable{
             }
             i++;
         }
-        
+         
         return returnArray;
     }
     
@@ -273,6 +272,8 @@ public class ProductManager implements IProductManager, Runnable{
                 }
             }
         }
+    
+        updateSource();
         
         return counter == productIds.length;
     }
@@ -299,18 +300,15 @@ public class ProductManager implements IProductManager, Runnable{
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-    
-        try {
-            updatedBaseProductArray = jsonReader.read();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    
-        //Right here is where the XXXX.updateIndex() call to the module from Group 2.2 goes (see below):
         
-        ProductIndexInfrastructure.getInstance().getProductIndex().indexProducts(updatedBaseProductArray);
+        updateIndex();
         
         return backgroundThread.isAlive();
+    }
+    
+    private void updateIndex(){
+        //Right here is where the XXXX.updateIndex() call to the module from Group 2.2 goes (see below):
+        ProductIndexInfrastructure.getInstance().getProductIndex().indexProducts(baseProductArray);
     }
     
     @Override
@@ -382,6 +380,7 @@ public class ProductManager implements IProductManager, Runnable{
             
             try {
                 jsonReader.write(baseProductArray);
+                updateIndex();
             }catch (IOException e){
                 e.printStackTrace();
             }
