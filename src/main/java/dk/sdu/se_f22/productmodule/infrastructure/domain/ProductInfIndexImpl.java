@@ -34,10 +34,6 @@ public class ProductInfIndexImpl implements ProductInfIndex{
         List<String> tokens = this.extractData(baseProduct, tokenParameter.getDelimiter());
         for (String token : tokens){
              for (String ignoredChar : tokenParameter.getIgnoredChars()){
-                 if (ignoredChar.equals("(") || ignoredChar.equals(")")){
-                     ignoredChar = "\\\\" + ignoredChar;
-                 }
-                 
                  if(token.contains(ignoredChar)){
                      token = token.replaceAll(ignoredChar, "");
                  }
