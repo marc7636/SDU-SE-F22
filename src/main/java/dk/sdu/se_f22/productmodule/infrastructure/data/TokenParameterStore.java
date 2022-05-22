@@ -31,7 +31,7 @@ class TokenParameterStore  {
 
 	public static TokenParameter loadTokenParameter() {
 		try{
-			PreparedStatement stmt = DBConnection.getConnection().prepareStatement("SELECT delimiter, ignoredChars FROM TokenParameters WHERE type = 'Product' ORDER BY id DESC LIMIT 1");
+			PreparedStatement stmt = DBConnection.getPooledConnection().prepareStatement("SELECT delimiter, ignoredChars FROM TokenParameters WHERE type = 'Product' ORDER BY id DESC LIMIT 1");
 			ResultSet queryResultSet = stmt.executeQuery();
 			if(queryResultSet.next()){
 				return new TokenParameter(queryResultSet.getString("delimiter"),queryResultSet.getString("ignoredChars"));
