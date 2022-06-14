@@ -10,13 +10,10 @@ import dk.sdu.se_f22.searchmodule.infrastructure.interfaces.SearchModule;
 import dk.sdu.se_f22.sortingmodule.category.CategoryFilter;
 import dk.sdu.se_f22.sortingmodule.infrastructure.data.MockData;
 import dk.sdu.se_f22.sortingmodule.infrastructure.data.SaveSearchQuery;
-import dk.sdu.se_f22.sortingmodule.range.exceptions.IdNotFoundException;
-import dk.sdu.se_f22.sortingmodule.range.exceptions.IllegalImplementationException;
-import dk.sdu.se_f22.sortingmodule.range.exceptions.InvalidFilterTypeException;
-import dk.sdu.se_f22.sortingmodule.range.exceptions.UnknownFilterTypeException;
+import dk.sdu.se_f22.sortingmodule.range.exceptions.*;
 import dk.sdu.se_f22.sortingmodule.range.rangepublic.*;
 import dk.sdu.se_f22.sortingmodule.scoring.IScoring;
-import dk.sdu.se_f22.sortingmodule.scoring.ScoreSortType;
+import dk.sdu.se_f22.sharedlibrary.utils.ScoreSortType;
 import dk.sdu.se_f22.sortingmodule.scoring.Scoring;
 
 /**
@@ -166,7 +163,7 @@ public class SortingModuleImpl implements SortingModule {
                     selectedFilters.get(selectedFilters.size() - 1).setUserMin(boundaries[0]);
                     selectedFilters.get(selectedFilters.size() - 1).setUserMax(boundaries[1]);
                 }
-            } catch (IdNotFoundException | UnknownFilterTypeException | InvalidFilterTypeException e) {
+            } catch (RangeFilterException e) {
                 e.printStackTrace();
             }
         });
@@ -178,7 +175,7 @@ public class SortingModuleImpl implements SortingModule {
                     selectedFilters.get(selectedFilters.size() - 1).setUserMin(boundaries[0]);
                     selectedFilters.get(selectedFilters.size() - 1).setUserMax(boundaries[1]);
                 }
-            } catch (IdNotFoundException | UnknownFilterTypeException | InvalidFilterTypeException e) {
+            } catch (RangeFilterException e) {
                 e.printStackTrace();
             }
         });
@@ -190,7 +187,7 @@ public class SortingModuleImpl implements SortingModule {
                     selectedFilters.get(selectedFilters.size() - 1).setUserMin(boundaries[0]);
                     selectedFilters.get(selectedFilters.size() - 1).setUserMax(boundaries[1]);
                 }
-            } catch (IdNotFoundException | UnknownFilterTypeException | InvalidFilterTypeException e) {
+            } catch (RangeFilterException e) {
                 e.printStackTrace();
             }
         });
